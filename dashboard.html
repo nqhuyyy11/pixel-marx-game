@@ -13,6 +13,26 @@
       padding: 24px 0 60px;
     }
 
+    /* Admin Login Gate */
+    .login-gate-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .login-box-card {
+      width: min(520px, 100%);
+      background: linear-gradient(135deg, rgba(14, 23, 52, 0.98), rgba(28, 18, 48, 0.98));
+      border: 4px solid var(--border);
+      border-bottom-width: 6px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(94, 234, 212, 0.15);
+      padding: 34px 30px;
+    }
+
     .dash-header {
       display: flex;
       flex-wrap: wrap;
@@ -358,18 +378,54 @@
 <body>
   <div class="scanlines" aria-hidden="true"></div>
 
-  <div class="dashboard-container">
+  <!-- VIEW 1: ADMIN LOGIN GATE -->
+  <div id="loginGateView" class="login-gate-wrapper">
+    <div class="login-box-card">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <p class="eyebrow" style="color: var(--yellow); font-size: 0.88rem;">🔒 KHU VỰC BẢO MẬT QUẢN TRỊ VIÊN</p>
+        <h2 style="margin: 8px 0; font-size: 1.8rem; color: var(--ink); text-shadow: 0 0 12px rgba(94, 234, 212, 0.3);">ĐĂNG NHẬP DASHBOARD</h2>
+        <p style="font-size: 0.92rem; color: var(--muted); margin: 0; line-height: 1.5;">
+          Trang theo dõi tiến độ thi đấu MLN111 dành riêng cho Giảng viên & Quản trò.
+        </p>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="return false;" style="display:flex; flex-direction:column; gap:16px;">
+        <div class="form-group">
+          <label for="adminUsername" style="color:var(--cyan); font-size:0.85rem; font-weight:bold;">TÀI KHOẢN ADMIN</label>
+          <input type="text" id="adminUsername" class="modal-input" placeholder="Tài khoản (vd: admin hoặc nqhuy)" value="admin" required autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword" style="color:var(--cyan); font-size:0.85rem; font-weight:bold;">MẬT KHẨU QUẢN TRỊ</label>
+          <input type="password" id="adminPassword" class="modal-input" placeholder="Nhập mật khẩu..." required autocomplete="off" />
+        </div>
+
+        <div id="loginErrorMsg" style="display:none; color:var(--red); font-size:0.9rem; padding: 4px 0; font-weight:bold; text-align:center;">
+          ❌ Tài khoản hoặc mật khẩu không chính xác!
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+          <button type="submit" id="btnAdminLogin" class="primary-button" style="width:100%; padding:14px; font-size:1.05rem;">🔓 Đăng Nhập Vào Dashboard</button>
+          <a href="index.html" class="ghost-button" style="text-decoration:none; text-align:center; padding:10px;">🎮 Quay lại trang chơi game</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW 2: MAIN DASHBOARD -->
+  <div id="mainDashboardView" class="dashboard-container" style="display: none;">
     <!-- Header -->
     <header class="dash-header">
       <div class="dash-title">
         <p class="eyebrow">Hệ thống Giám sát Học thuật MLN111</p>
         <h1>PIXEL MARX: <span>LIVE TRACKER & RANKING</span></h1>
-        <p>Theo dõi tiến độ vượt màn và vinh danh sinh viên hoàn thành 3 quy luật Triết học.</p>
+        <p>Theo dõi tiến độ vượt màn và vinh danh sinh viên hoàn thành 3 quy luật Triết học (Giới hạn 10:00).</p>
       </div>
       <div class="dash-actions">
         <a href="index.html" class="ghost-button" style="text-decoration:none;">🎮 Vào chơi game</a>
         <button id="btnExportCsv" class="primary-button" style="background:#059669; border-color:#34d399; color:#fff;">📥 Xuất Excel (CSV)</button>
         <button id="btnReset" class="ghost-button" style="color:var(--red); border-color:var(--red);">⚠️ Reset phiên</button>
+        <button id="btnLogout" class="ghost-button" title="Đăng xuất quản trị">🚪 Đăng xuất</button>
       </div>
     </header>
 
@@ -456,6 +512,8 @@
     (() => {
       'use strict';
 
+      const AUTH_KEY = 'pixelMarxAdminAuth';
+
       const state = {
         players: [],
         winners: [],
@@ -463,6 +521,13 @@
       };
 
       const dom = {
+        loginGateView: document.getElementById('loginGateView'),
+        mainDashboardView: document.getElementById('mainDashboardView'),
+        adminLoginForm: document.getElementById('adminLoginForm'),
+        adminUsername: document.getElementById('adminUsername'),
+        adminPassword: document.getElementById('adminPassword'),
+        loginErrorMsg: document.getElementById('loginErrorMsg'),
+        btnLogout: document.getElementById('btnLogout'),
         tabs: document.querySelectorAll('.tab-btn'),
         tabContents: document.querySelectorAll('.tab-content'),
         playersGrid: document.getElementById('playersGrid'),
@@ -480,6 +545,59 @@
         winToastTitle: document.getElementById('winToastTitle'),
         winToastDesc: document.getElementById('winToastDesc'),
       };
+
+      // Check Authentication
+      function checkAuth() {
+        if (sessionStorage.getItem(AUTH_KEY) === 'true') {
+          dom.loginGateView.style.display = 'none';
+          dom.mainDashboardView.style.display = 'block';
+          startDashboardService();
+        } else {
+          dom.loginGateView.style.display = 'flex';
+          dom.mainDashboardView.style.display = 'none';
+          dom.adminPassword.focus();
+        }
+      }
+
+      // Handle Admin Login Submit
+      dom.adminLoginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = dom.adminUsername.value.trim();
+        const password = dom.adminPassword.value.trim();
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            sessionStorage.setItem(AUTH_KEY, 'true');
+            dom.loginErrorMsg.style.display = 'none';
+            checkAuth();
+          } else {
+            dom.loginErrorMsg.style.display = 'block';
+            dom.loginErrorMsg.textContent = '❌ ' + (data.error || 'Tài khoản hoặc mật khẩu không chính xác!');
+          }
+        } catch (err) {
+          // Offline fallback
+          if ((username.toLowerCase() === 'admin' || username.toLowerCase() === 'nqhuy') && password === 'huyvipmn5') {
+            sessionStorage.setItem(AUTH_KEY, 'true');
+            dom.loginErrorMsg.style.display = 'none';
+            checkAuth();
+          } else {
+            dom.loginErrorMsg.style.display = 'block';
+            dom.loginErrorMsg.textContent = '❌ Mật khẩu quản trị không chính xác!';
+          }
+        }
+      });
+
+      // Handle Logout
+      dom.btnLogout.addEventListener('click', () => {
+        sessionStorage.removeItem(AUTH_KEY);
+        window.location.reload();
+      });
 
       // Tab navigation
       dom.tabs.forEach(tab => {
@@ -756,10 +874,14 @@
         };
       }
 
-      // Initial load & Polling fallback every 3s
-      fetchData();
-      initWebSocket();
-      setInterval(fetchData, 3500);
+      function startDashboardService() {
+        fetchData();
+        initWebSocket();
+        setInterval(fetchData, 3500);
+      }
+
+      // Initial check
+      checkAuth();
     })();
   </script>
 </body>

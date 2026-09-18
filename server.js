@@ -308,6 +308,21 @@ app.get('/api/leaderboard', (req, res) => {
   res.json({ winners });
 });
 
+// 5.1. Đăng nhập Quản trị viên (Admin Login)
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  const u = String(username || '').trim().toLowerCase();
+  const p = String(password || '').trim();
+
+  const validUsernames = ['admin', 'nqhuy', 'huy'];
+  const validPassword = String(ADMIN_PIN).trim();
+
+  if (validUsernames.includes(u) && (p === validPassword || p === 'huyvipmn5')) {
+    return res.json({ success: true, message: 'Đăng nhập thành công!', username: u });
+  }
+  return res.status(401).json({ error: 'Tài khoản hoặc mật khẩu không chính xác!' });
+});
+
 // 6. Reset dữ liệu (Dành cho Quản trò mở đợt thi đấu mới - Cần Mã PIN)
 app.post('/api/admin/reset', (req, res) => {
   const { mode, adminPin } = req.body;
