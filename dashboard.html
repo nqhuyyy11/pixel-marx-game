@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -51,8 +52,15 @@
     }
 
     @keyframes modalPopupScale {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     .admin-modal-card.shake {
@@ -60,9 +68,21 @@
     }
 
     @keyframes modalShake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-10px); }
-      40%, 80% { transform: translateX(10px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-10px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(10px);
+      }
     }
 
     .dash-header {
@@ -127,10 +147,21 @@
       line-height: 1;
     }
 
-    .stat-card.cyan strong { color: var(--cyan); }
-    .stat-card.yellow strong { color: var(--yellow); }
-    .stat-card.green strong { color: var(--green); }
-    .stat-card.pink strong { color: var(--pink); }
+    .stat-card.cyan strong {
+      color: var(--cyan);
+    }
+
+    .stat-card.yellow strong {
+      color: var(--yellow);
+    }
+
+    .stat-card.green strong {
+      color: var(--green);
+    }
+
+    .stat-card.pink strong {
+      color: var(--pink);
+    }
 
     .nav-tabs {
       display: flex;
@@ -276,10 +307,29 @@
       letter-spacing: 0.04em;
     }
 
-    .badge-ch0 { border-color: #b7791f; background: rgba(183, 121, 31, 0.2); color: #fbd38d; }
-    .badge-ch1 { border-color: #065f46; background: rgba(6, 95, 70, 0.25); color: #6ee7b7; }
-    .badge-ch2 { border-color: #7e22ce; background: rgba(126, 34, 206, 0.25); color: #d8b4fe; }
-    .badge-win { border-color: var(--yellow); background: rgba(250, 204, 21, 0.25); color: var(--yellow); }
+    .badge-ch0 {
+      border-color: #b7791f;
+      background: rgba(183, 121, 31, 0.2);
+      color: #fbd38d;
+    }
+
+    .badge-ch1 {
+      border-color: #065f46;
+      background: rgba(6, 95, 70, 0.25);
+      color: #6ee7b7;
+    }
+
+    .badge-ch2 {
+      border-color: #7e22ce;
+      background: rgba(126, 34, 206, 0.25);
+      color: #d8b4fe;
+    }
+
+    .badge-win {
+      border-color: var(--yellow);
+      background: rgba(250, 204, 21, 0.25);
+      color: var(--yellow);
+    }
 
     .progress-track {
       height: 10px;
@@ -314,8 +364,13 @@
       justify-content: space-between;
     }
 
-    .stat-row span { color: var(--muted); }
-    .stat-row strong { color: var(--ink); }
+    .stat-row span {
+      color: var(--muted);
+    }
+
+    .stat-row strong {
+      color: var(--ink);
+    }
 
     /* Leaderboard Table */
     .table-frame {
@@ -362,9 +417,23 @@
       border: 2px solid var(--border);
     }
 
-    .rank-1 { background: #eab308; color: #000; border-color: #fef08a; }
-    .rank-2 { background: #94a3b8; color: #000; border-color: #cbd5e1; }
-    .rank-3 { background: #b45309; color: #fff; border-color: #f59e0b; }
+    .rank-1 {
+      background: #eab308;
+      color: #000;
+      border-color: #fef08a;
+    }
+
+    .rank-2 {
+      background: #94a3b8;
+      color: #000;
+      border-color: #cbd5e1;
+    }
+
+    .rank-3 {
+      background: #b45309;
+      color: #fff;
+      border-color: #f59e0b;
+    }
 
     /* Win Toast Notification */
     .win-toast {
@@ -407,6 +476,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="scanlines" aria-hidden="true"></div>
 
@@ -415,8 +485,10 @@
     <div class="admin-modal-card" id="adminModalCard">
       <div style="text-align: center; margin-bottom: 24px;">
         <div style="font-size: 2.4rem; margin-bottom: 8px;">🔒</div>
-        <p class="eyebrow" style="color: var(--yellow); font-size: 0.88rem; letter-spacing: 0.12em;">KHU VỰC BẢO MẬT QUẢN TRỊ VIÊN</p>
-        <h2 style="margin: 8px 0; font-size: 1.7rem; color: var(--ink); text-shadow: 0 0 12px rgba(94, 234, 212, 0.3);">XÁC THỰC ĐĂNG NHẬP</h2>
+        <p class="eyebrow" style="color: var(--yellow); font-size: 0.88rem; letter-spacing: 0.12em;">KHU VỰC BẢO MẬT
+          QUẢN TRỊ VIÊN</p>
+        <h2 style="margin: 8px 0; font-size: 1.7rem; color: var(--ink); text-shadow: 0 0 12px rgba(94, 234, 212, 0.3);">
+          XÁC THỰC ĐĂNG NHẬP</h2>
         <p style="font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.5;">
           Hệ thống giám sát thi đấu MLN111. Vui lòng nhập tài khoản & mật khẩu quản trị để truy cập.
         </p>
@@ -424,22 +496,32 @@
 
       <form id="adminLoginForm" onsubmit="return false;" style="display:flex; flex-direction:column; gap:16px;">
         <div class="form-group">
-          <label for="adminUsername" style="color:var(--cyan); font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px;">👤 TÀI KHOẢN ADMIN</label>
-          <input type="text" id="adminUsername" class="modal-input" placeholder="Nhập tài khoản (vd: admin hoặc nqhuy)..." required autocomplete="username" />
+          <label for="adminUsername"
+            style="color:var(--cyan); font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px;">👤 TÀI
+            KHOẢN ADMIN</label>
+          <input type="text" id="adminUsername" class="modal-input" placeholder="Nhập tài khoản admin..."
+            required autocomplete="username" />
         </div>
 
         <div class="form-group">
-          <label for="adminPassword" style="color:var(--cyan); font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px;">🔑 MẬT KHẨU QUẢN TRỊ</label>
-          <input type="password" id="adminPassword" class="modal-input" placeholder="Nhập mật khẩu (vd: huyvipmn5)..." required autocomplete="current-password" />
+          <label for="adminPassword"
+            style="color:var(--cyan); font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px;">🔑 MẬT
+            KHẨU QUẢN TRỊ</label>
+          <input type="password" id="adminPassword" class="modal-input" placeholder="Nhập mật khẩu..."
+            required autocomplete="current-password" />
         </div>
 
-        <div id="loginErrorMsg" style="display:none; color:#f87171; background:rgba(239, 68, 68, 0.15); border:1px solid #ef4444; border-radius:4px; font-size:0.88rem; padding:10px 12px; font-weight:bold; text-align:center;">
+        <div id="loginErrorMsg"
+          style="display:none; color:#f87171; background:rgba(239, 68, 68, 0.15); border:1px solid #ef4444; border-radius:4px; font-size:0.88rem; padding:10px 12px; font-weight:bold; text-align:center;">
           ❌ Tài khoản hoặc mật khẩu không chính xác!
         </div>
 
         <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-          <button type="submit" id="btnAdminLogin" class="primary-button" style="width:100%; padding:14px; font-size:1.05rem; cursor:pointer;">🔓 Đăng Nhập Dashboard</button>
-          <a href="index.html" class="ghost-button" style="text-decoration:none; text-align:center; padding:10px; font-size:0.92rem;">🎮 Quay lại trang chơi game</a>
+          <button type="submit" id="btnAdminLogin" class="primary-button"
+            style="width:100%; padding:14px; font-size:1.05rem; cursor:pointer;">🔓 Đăng Nhập Dashboard</button>
+          <a href="index.html" class="ghost-button"
+            style="text-decoration:none; text-align:center; padding:10px; font-size:0.92rem;">🎮 Quay lại trang chơi
+            game</a>
         </div>
       </form>
     </div>
@@ -456,8 +538,10 @@
       </div>
       <div class="dash-actions">
         <a href="index.html" class="ghost-button" style="text-decoration:none;">🎮 Vào chơi game</a>
-        <button id="btnExportCsv" class="primary-button" style="background:#059669; border-color:#34d399; color:#fff;">📥 Xuất Excel (CSV)</button>
-        <button id="btnReset" class="ghost-button" style="color:var(--red); border-color:var(--red);">⚠️ Reset phiên</button>
+        <button id="btnExportCsv" class="primary-button"
+          style="background:#059669; border-color:#34d399; color:#fff;">📥 Xuất Excel (CSV)</button>
+        <button id="btnReset" class="ghost-button" style="color:var(--red); border-color:var(--red);">⚠️ Reset
+          phiên</button>
         <button id="btnLogout" class="ghost-button" title="Đăng xuất quản trị">🚪 Đăng xuất</button>
       </div>
     </header>
@@ -491,7 +575,8 @@
     <!-- Tab 1: Live Monitor -->
     <section id="liveTab" class="tab-content active">
       <div class="filter-bar">
-        <input type="text" id="searchPlayer" class="search-input" placeholder="🔍 Tìm kiếm theo Mã SV, Họ tên, Lớp..." />
+        <input type="text" id="searchPlayer" class="search-input"
+          placeholder="🔍 Tìm kiếm theo Mã SV, Họ tên, Lớp..." />
         <div style="color: var(--muted); font-size: 0.9rem; align-self: center;">
           <span style="color:var(--green);">●</span> Tự động đồng bộ thời gian thực qua WebSocket
         </div>
@@ -500,7 +585,8 @@
       <div id="playersGrid" class="players-grid">
         <!-- Player cards will render here -->
       </div>
-      <div id="emptyPlayersMsg" style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
+      <div id="emptyPlayersMsg"
+        style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
         Chưa có sinh viên nào tham gia lượt chơi. Hãy chia sẻ link game để sinh viên nhập MSSV và bắt đầu!
       </div>
     </section>
@@ -526,7 +612,8 @@
           </tbody>
         </table>
       </div>
-      <div id="emptyWinnersMsg" style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
+      <div id="emptyWinnersMsg"
+        style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
         Chưa có sinh viên nào phá đảo Màn 3. Danh sách người thắng sẽ xuất hiện tại đây ngay khi có người hoàn thành!
       </div>
     </section>
@@ -740,7 +827,7 @@
         const now = Date.now();
         const active = state.players.filter(p => p.status === 'playing' && (now - (p.lastActive || 0) < 30000)).length;
         const won = state.players.filter(p => p.status === 'won').length;
-        
+
         let best = '--:--';
         if (state.winners.length > 0) {
           best = formatDuration(state.winners[0].totalTime);
@@ -773,8 +860,8 @@
         const filtered = state.players.filter(p => {
           if (!query) return true;
           return (p.studentId && p.studentId.toLowerCase().includes(query)) ||
-                 (p.fullName && p.fullName.toLowerCase().includes(query)) ||
-                 (p.classGroup && p.classGroup.toLowerCase().includes(query));
+            (p.fullName && p.fullName.toLowerCase().includes(query)) ||
+            (p.classGroup && p.classGroup.toLowerCase().includes(query));
         });
 
         if (filtered.length === 0) {
@@ -938,7 +1025,7 @@
             } else if (msg.event === 'RESET') {
               fetchData();
             }
-          } catch (e) {}
+          } catch (e) { }
         };
 
         ws.onclose = () => {
@@ -957,4 +1044,5 @@
     })();
   </script>
 </body>
+
 </html>
