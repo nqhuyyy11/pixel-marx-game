@@ -1,0 +1,23 @@
+{
+  "name": "pixel-marx-mln111",
+  "version": "1.0.0",
+  "description": "Pixel Marx: Dấu Chân Triết Gia - Game 2D & Hệ thống Theo dõi Tiến độ Sinh viên Real-time",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.0"
+  },
+  "keywords": [
+    "game",
+    "mln111",
+    "philosophy",
+    "realtime-tracker",
+    "leaderboard"
+  ],
+  "author": "FPT Student",
+  "license": "MIT"
+}

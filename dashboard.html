@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Marx: Bảng Điều Khiển & Theo Dõi Tiến Độ Sinh Viên</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Custom styles for the Admin Dashboard */
+    .dashboard-container {
+      width: min(1520px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 60px;
+    }
+
+    .dash-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(14, 23, 49, 0.95), rgba(30, 20, 52, 0.95));
+      border: 4px solid var(--border);
+      border-bottom-width: 6px;
+      box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .dash-title h1 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      margin: 0 0 6px;
+    }
+
+    .dash-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .dash-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stat-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      padding: 18px 20px;
+      border: 3px solid var(--border);
+      background: rgba(17, 24, 46, 0.92);
+      box-shadow: 4px 4px 0 var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-card span {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .stat-card strong {
+      font-size: 2.2rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .stat-card.cyan strong { color: var(--cyan); }
+    .stat-card.yellow strong { color: var(--yellow); }
+    .stat-card.green strong { color: var(--green); }
+    .stat-card.pink strong { color: var(--pink); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      cursor: pointer;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: 2px solid var(--border);
+      background: #1e293b;
+      color: var(--muted);
+      box-shadow: 3px 3px 0 var(--shadow);
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--cyan);
+      color: #0b1020;
+      border-color: var(--cyan);
+      box-shadow: 3px 3px 0 #0f766e;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Filters & Search */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 260px;
+      max-width: 450px;
+      padding: 10px 16px;
+      background: rgba(10, 16, 34, 0.9);
+      border: 2px solid var(--border);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(94, 234, 212, 0.3);
+    }
+
+    /* Live Players Grid */
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .player-card {
+      border: 3px solid var(--border);
+      background: rgba(15, 23, 48, 0.94);
+      padding: 16px 18px;
+      box-shadow: 5px 5px 0 var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .player-card.is-won {
+      border-color: var(--yellow);
+      background: linear-gradient(145deg, rgba(20, 27, 56, 0.96), rgba(45, 33, 15, 0.92));
+      box-shadow: 5px 5px 0 #713f12, 0 0 16px rgba(250, 204, 21, 0.2);
+    }
+
+    .player-card.is-online::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .player-card.is-offline::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      opacity: 0.5;
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-mssv {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--cyan);
+      letter-spacing: 0.05em;
+    }
+
+    .card-name {
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .card-group {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .chapter-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: bold;
+      border: 2px solid;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-ch0 { border-color: #b7791f; background: rgba(183, 121, 31, 0.2); color: #fbd38d; }
+    .badge-ch1 { border-color: #065f46; background: rgba(6, 95, 70, 0.25); color: #6ee7b7; }
+    .badge-ch2 { border-color: #7e22ce; background: rgba(126, 34, 206, 0.25); color: #d8b4fe; }
+    .badge-win { border-color: var(--yellow); background: rgba(250, 204, 21, 0.25); color: var(--yellow); }
+
+    .progress-track {
+      height: 10px;
+      background: #090e1f;
+      border: 2px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transition: width 0.3s ease;
+    }
+
+    .player-card.is-won .progress-bar {
+      background: linear-gradient(90deg, #f59e0b, var(--yellow));
+    }
+
+    .card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(8, 12, 26, 0.75);
+      padding: 8px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.86rem;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stat-row span { color: var(--muted); }
+    .stat-row strong { color: var(--ink); }
+
+    /* Leaderboard Table */
+    .table-frame {
+      border: 4px solid var(--border);
+      background: rgba(13, 20, 42, 0.96);
+      box-shadow: 6px 6px 0 var(--shadow);
+      overflow-x: auto;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    table.data-table th {
+      background: #0f1832;
+      padding: 14px 16px;
+      color: var(--cyan);
+      border-bottom: 3px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+    }
+
+    table.data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(45, 65, 108, 0.6);
+    }
+
+    table.data-table tr:hover {
+      background: rgba(94, 234, 212, 0.05);
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      font-weight: bold;
+      font-size: 1.05rem;
+      border: 2px solid var(--border);
+    }
+
+    .rank-1 { background: #eab308; color: #000; border-color: #fef08a; }
+    .rank-2 { background: #94a3b8; color: #000; border-color: #cbd5e1; }
+    .rank-3 { background: #b45309; color: #fff; border-color: #f59e0b; }
+
+    /* Win Toast Notification */
+    .win-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #1e1b4b, #3b0764);
+      border: 3px solid var(--yellow);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(250, 204, 21, 0.4);
+      padding: 16px 20px;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transform: translateY(120%);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
+    }
+
+    .win-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .win-toast-icon {
+      font-size: 2.2rem;
+    }
+
+    .win-toast-body h4 {
+      margin: 0 0 4px;
+      color: var(--yellow);
+      font-size: 1.1rem;
+    }
+
+    .win-toast-body p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dash-header">
+      <div class="dash-title">
+        <p class="eyebrow">Hệ thống Giám sát Học thuật MLN111</p>
+        <h1>PIXEL MARX: <span>LIVE TRACKER & RANKING</span></h1>
+        <p>Theo dõi tiến độ vượt màn và vinh danh sinh viên hoàn thành 3 quy luật Triết học.</p>
+      </div>
+      <div class="dash-actions">
+        <a href="index.html" class="ghost-button" style="text-decoration:none;">🎮 Vào chơi game</a>
+        <button id="btnExportCsv" class="primary-button" style="background:#059669; border-color:#34d399; color:#fff;">📥 Xuất Excel (CSV)</button>
+        <button id="btnReset" class="ghost-button" style="color:var(--red); border-color:var(--red);">⚠️ Reset phiên</button>
+      </div>
+    </header>
+
+    <!-- Stat Cards -->
+    <div class="stat-cards-grid">
+      <div class="stat-card cyan">
+        <span>Tổng sinh viên</span>
+        <strong id="statTotalStudents">0</strong>
+      </div>
+      <div class="stat-card green">
+        <span>Đang trong trận</span>
+        <strong id="statActiveStudents">0</strong>
+      </div>
+      <div class="stat-card yellow">
+        <span>Đã phá đảo (Win)</span>
+        <strong id="statWinners">0</strong>
+      </div>
+      <div class="stat-card pink">
+        <span>Kỷ lục nhanh nhất</span>
+        <strong id="statBestTime">--:--</strong>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-tab="liveTab">📊 TIẾN ĐỘ THỜI GIAN THỰC (LIVE)</button>
+      <button class="tab-btn" data-tab="leaderboardTab">🏆 BẢNG VINH DANH & XẾP HẠNG</button>
+    </div>
+
+    <!-- Tab 1: Live Monitor -->
+    <section id="liveTab" class="tab-content active">
+      <div class="filter-bar">
+        <input type="text" id="searchPlayer" class="search-input" placeholder="🔍 Tìm kiếm theo Mã SV, Họ tên, Lớp..." />
+        <div style="color: var(--muted); font-size: 0.9rem; align-self: center;">
+          <span style="color:var(--green);">●</span> Tự động đồng bộ thời gian thực qua WebSocket
+        </div>
+      </div>
+
+      <div id="playersGrid" class="players-grid">
+        <!-- Player cards will render here -->
+      </div>
+      <div id="emptyPlayersMsg" style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
+        Chưa có sinh viên nào tham gia lượt chơi. Hãy chia sẻ link game để sinh viên nhập MSSV và bắt đầu!
+      </div>
+    </section>
+
+    <!-- Tab 2: Leaderboard -->
+    <section id="leaderboardTab" class="tab-content">
+      <div class="table-frame">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 80px;">Hạng</th>
+              <th>Mã Sinh Viên</th>
+              <th>Họ và Tên</th>
+              <th>Lớp / Nhóm</th>
+              <th>Danh Hiệu Triết Học</th>
+              <th>Thời Gian (Nhanh nhất)</th>
+              <th>Điểm Số</th>
+              <th>Thời Điểm Hoàn Thành</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTableBody">
+            <!-- Winners table rows will render here -->
+          </tbody>
+        </table>
+      </div>
+      <div id="emptyWinnersMsg" style="display:none; text-align:center; padding: 40px; color: var(--muted); font-size:1.1rem;">
+        Chưa có sinh viên nào phá đảo Màn 3. Danh sách người thắng sẽ xuất hiện tại đây ngay khi có người hoàn thành!
+      </div>
+    </section>
+  </div>
+
+  <!-- Win Notification Toast -->
+  <div id="winToast" class="win-toast" aria-live="polite">
+    <div class="win-toast-icon">🏆</div>
+    <div class="win-toast-body">
+      <h4 id="winToastTitle">Sinh viên đã phá đảo!</h4>
+      <p id="winToastDesc">Nguyễn Văn A vừa hoàn thành Màn 3 trong 04:12!</p>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const state = {
+        players: [],
+        winners: [],
+        searchQuery: '',
+      };
+
+      const dom = {
+        tabs: document.querySelectorAll('.tab-btn'),
+        tabContents: document.querySelectorAll('.tab-content'),
+        playersGrid: document.getElementById('playersGrid'),
+        emptyPlayersMsg: document.getElementById('emptyPlayersMsg'),
+        leaderboardTableBody: document.getElementById('leaderboardTableBody'),
+        emptyWinnersMsg: document.getElementById('emptyWinnersMsg'),
+        statTotalStudents: document.getElementById('statTotalStudents'),
+        statActiveStudents: document.getElementById('statActiveStudents'),
+        statWinners: document.getElementById('statWinners'),
+        statBestTime: document.getElementById('statBestTime'),
+        searchPlayer: document.getElementById('searchPlayer'),
+        btnExportCsv: document.getElementById('btnExportCsv'),
+        btnReset: document.getElementById('btnReset'),
+        winToast: document.getElementById('winToast'),
+        winToastTitle: document.getElementById('winToastTitle'),
+        winToastDesc: document.getElementById('winToastDesc'),
+      };
+
+      // Tab navigation
+      dom.tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          dom.tabs.forEach(t => t.classList.remove('active'));
+          dom.tabContents.forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Search filter
+      dom.searchPlayer.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value.toLowerCase().trim();
+        renderPlayers();
+      });
+
+      // Export CSV
+      dom.btnExportCsv.addEventListener('click', () => {
+        window.location.href = '/api/export-csv';
+      });
+
+      // Reset with PIN protection
+      dom.btnReset.addEventListener('click', async () => {
+        const pin = prompt('Nhập Mã PIN Admin để xác nhận thiết lập lại dữ liệu:');
+        if (pin === null) return;
+        if (!pin.trim()) {
+          alert('Chưa nhập mã PIN!');
+          return;
+        }
+
+        if (!confirm('CẢNH BÁO: Toàn bộ danh sách người chơi & bảng xếp hạng sẽ bị xóa về 0. Bạn chắc chắn chứ?')) return;
+
+        try {
+          const res = await fetch('/api/admin/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: 'all', adminPin: pin.trim() }),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert('✅ ' + data.message);
+            fetchData();
+          } else {
+            alert('❌ ' + (data.error || 'Lỗi xác thực Admin!'));
+          }
+        } catch (e) {
+          alert('❌ Lỗi kết nối máy chủ!');
+        }
+      });
+
+      function formatDuration(seconds) {
+        if (isNaN(seconds) || seconds === null || seconds === undefined) return '00:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      function showWinToast(winner) {
+        dom.winToastTitle.textContent = `🎉 HẠNG #${winner.rank || 'WIN'} - ${winner.studentId}`;
+        dom.winToastDesc.textContent = `${winner.fullName} vừa phá đảo Màn 3 trong ${winner.timeFormatted || formatDuration(winner.totalTime)} (${winner.score} điểm)!`;
+        dom.winToast.classList.add('show');
+        setTimeout(() => dom.winToast.classList.remove('show'), 6000);
+      }
+
+      function renderStats() {
+        const total = state.players.length;
+        const now = Date.now();
+        const active = state.players.filter(p => p.status === 'playing' && (now - (p.lastActive || 0) < 30000)).length;
+        const won = state.players.filter(p => p.status === 'won').length;
+        
+        let best = '--:--';
+        if (state.winners.length > 0) {
+          best = formatDuration(state.winners[0].totalTime);
+        }
+
+        dom.statTotalStudents.textContent = total;
+        dom.statActiveStudents.textContent = active;
+        dom.statWinners.textContent = won;
+        dom.statBestTime.textContent = best;
+      }
+
+      function getChapterBadgeClass(chapterIndex, status) {
+        if (status === 'won') return 'badge-win';
+        if (chapterIndex === 0) return 'badge-ch0';
+        if (chapterIndex === 1) return 'badge-ch1';
+        if (chapterIndex === 2) return 'badge-ch2';
+        return 'badge-ch0';
+      }
+
+      function getProgressPercent(chapterIndex, status) {
+        if (status === 'won') return 100;
+        if (chapterIndex === 0) return 25;
+        if (chapterIndex === 1) return 55;
+        if (chapterIndex === 2) return 85;
+        return 10;
+      }
+
+      function renderPlayers() {
+        const query = state.searchQuery;
+        const filtered = state.players.filter(p => {
+          if (!query) return true;
+          return (p.studentId && p.studentId.toLowerCase().includes(query)) ||
+                 (p.fullName && p.fullName.toLowerCase().includes(query)) ||
+                 (p.classGroup && p.classGroup.toLowerCase().includes(query));
+        });
+
+        if (filtered.length === 0) {
+          dom.playersGrid.innerHTML = '';
+          dom.emptyPlayersMsg.style.display = 'block';
+          return;
+        }
+
+        dom.emptyPlayersMsg.style.display = 'none';
+        const now = Date.now();
+
+        dom.playersGrid.innerHTML = filtered.map(player => {
+          const isWon = player.status === 'won';
+          const isTimeout = player.status === 'timeout';
+          const isOnline = !isWon && !isTimeout && (now - (player.lastActive || 0) < 30000);
+          const badgeClass = getChapterBadgeClass(player.currentChapter, player.status);
+          const percent = getProgressPercent(player.currentChapter, player.status);
+          const statusClass = isWon ? 'is-won' : (isTimeout ? 'is-offline' : (isOnline ? 'is-online' : 'is-offline'));
+          const remain = Math.max(0, 600 - (player.elapsedTime || 0));
+
+          let statusLabel = isWon ? '🏆 Thắng' : (isTimeout ? '🔴 Hết giờ (10p)' : (isOnline ? '🟢 Đang cày' : '⚪ Tạm nghỉ'));
+
+          return `
+            <div class="player-card ${statusClass}">
+              <div class="card-top">
+                <div class="card-mssv">${escapeHtml(player.studentId)}</div>
+                <div class="card-name">${escapeHtml(player.fullName)}</div>
+                <div class="card-group">${escapeHtml(player.classGroup || 'Lớp chưa nhập')}</div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="chapter-badge ${badgeClass}">${escapeHtml(player.chapterName || 'Màn 1')}</span>
+                <span style="font-size:0.8rem; color:${remain <= 60 ? 'var(--red)' : 'var(--yellow)'}; font-weight:bold;">⏳ Còn ${formatDuration(remain)}</span>
+              </div>
+
+              <div class="progress-track">
+                <div class="progress-bar" style="width: ${percent}%;"></div>
+              </div>
+
+              <div class="card-stats">
+                <div class="stat-row">
+                  <span>Thời gian:</span>
+                  <strong>${formatDuration(player.elapsedTime)}</strong>
+                </div>
+                <div class="stat-row">
+                  <span>Điểm:</span>
+                  <strong>${player.score || 0}</strong>
+                </div>
+                <div class="stat-row">
+                  <span>Máu HP:</span>
+                  <strong>${player.hp ?? 100}/100</strong>
+                </div>
+                <div class="stat-row">
+                  <span>Trạng thái:</span>
+                  <strong style="color:${isTimeout ? 'var(--red)' : 'inherit'};">${statusLabel}</strong>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderLeaderboard() {
+        if (state.winners.length === 0) {
+          dom.leaderboardTableBody.innerHTML = '';
+          dom.emptyWinnersMsg.style.display = 'block';
+          return;
+        }
+
+        dom.emptyWinnersMsg.style.display = 'none';
+
+        dom.leaderboardTableBody.innerHTML = state.winners.map((w, index) => {
+          const rank = index + 1;
+          let rankHtml = `<span class="rank-badge">${rank}</span>`;
+          if (rank === 1) rankHtml = `<span class="rank-badge rank-1">🥇 1</span>`;
+          else if (rank === 2) rankHtml = `<span class="rank-badge rank-2">🥈 2</span>`;
+          else if (rank === 3) rankHtml = `<span class="rank-badge rank-3">🥉 3</span>`;
+
+          const finishedDate = w.completedAt ? new Date(w.completedAt).toLocaleTimeString('vi-VN') : '--';
+          const titleBadge = w.title || (w.totalTime <= 300 ? '🥇 Bậc Thầy Biện Chứng' : (w.totalTime <= 420 ? '🥈 Triết Gia Xuất Sắc' : '🥉 Vượt Qua Deadline'));
+
+          return `
+            <tr>
+              <td>${rankHtml}</td>
+              <td style="font-weight:bold; color:var(--cyan);">${escapeHtml(w.studentId)}</td>
+              <td style="font-weight:600;">${escapeHtml(w.fullName)}</td>
+              <td style="color:var(--muted);">${escapeHtml(w.classGroup || '-')}</td>
+              <td style="font-weight:bold; color:var(--yellow); font-size:0.92rem;">${escapeHtml(titleBadge)}</td>
+              <td style="color:var(--yellow); font-weight:bold; font-size:1.05rem;">${w.timeFormatted || formatDuration(w.totalTime)} / 10:00</td>
+              <td style="color:var(--green); font-weight:bold;">${w.score}</td>
+              <td style="color:var(--muted); font-size:0.85rem;">${finishedDate}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+      }
+
+      async function fetchData() {
+        try {
+          const [liveRes, leadRes] = await Promise.all([
+            fetch('/api/players/live').then(r => r.json()),
+            fetch('/api/leaderboard').then(r => r.json()),
+          ]);
+
+          state.players = liveRes.players || [];
+          state.winners = leadRes.winners || [];
+
+          renderStats();
+          renderPlayers();
+          renderLeaderboard();
+        } catch (e) {
+          console.warn('Lỗi cập nhật dữ liệu:', e);
+        }
+      }
+
+      // Initialize WebSocket connection
+      function initWebSocket() {
+        if (!window.WebSocket) return;
+        const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${proto}//${window.location.host}/ws`);
+
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ type: 'SUBSCRIBE_DASHBOARD' }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.event === 'SNAPSHOT') {
+              state.players = msg.data.players || [];
+              state.winners = msg.data.winners || [];
+              renderStats();
+              renderPlayers();
+              renderLeaderboard();
+            } else if (msg.event === 'PLAYER_JOINED' || msg.event === 'PLAYER_PROGRESS') {
+              const updated = msg.data;
+              const idx = state.players.findIndex(p => p.studentId === updated.studentId);
+              if (idx >= 0) {
+                state.players[idx] = updated;
+              } else {
+                state.players.push(updated);
+              }
+              renderStats();
+              renderPlayers();
+            } else if (msg.event === 'PLAYER_WIN') {
+              const { winner, leaderboard, player } = msg.data;
+              state.winners = leaderboard;
+              if (player) {
+                const idx = state.players.findIndex(p => p.studentId === player.studentId);
+                if (idx >= 0) state.players[idx] = player;
+                else state.players.push(player);
+              }
+              renderStats();
+              renderPlayers();
+              renderLeaderboard();
+              showWinToast(winner);
+            } else if (msg.event === 'RESET') {
+              fetchData();
+            }
+          } catch (e) {}
+        };
+
+        ws.onclose = () => {
+          setTimeout(initWebSocket, 4000);
+        };
+      }
+
+      // Initial load & Polling fallback every 3s
+      fetchData();
+      initWebSocket();
+      setInterval(fetchData, 3500);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "players": {
+    "HE182510": {
+      "studentId": "HE182510",
+      "fullName": "quanghuy",
+      "classGroup": "1",
+      "currentChapter": 0,
+      "chapterName": "Màn 1: Lượng - Chất",
+      "score": 0,
+      "hp": 100,
+      "elapsedTime": 8,
+      "status": "playing",
+      "startTime": 1789718917859,
+      "lastActive": 1789718925859,
+      "completedAt": null,
+      "bestTime": 235,
+      "totalPlays": 4
+    },
+    "HE182323": {
+      "studentId": "HE182323",
+      "fullName": "baongoc",
+      "classGroup": "1",
+      "currentChapter": 0,
+      "chapterName": "Màn 1: Lượng - Chất",
+      "score": 0,
+      "hp": 100,
+      "elapsedTime": 4,
+      "status": "playing",
+      "startTime": 1789719938675,
+      "lastActive": 1789719942656,
+      "completedAt": null,
+      "bestTime": null,
+      "totalPlays": 8
+    },
+    "HE1211": {
+      "studentId": "HE1211",
+      "fullName": "trườngsơn",
+      "classGroup": "3",
+      "currentChapter": 0,
+      "chapterName": "Màn 1: Lượng - Chất",
+      "score": 0,
+      "hp": 100,
+      "elapsedTime": 394,
+      "status": "playing",
+      "startTime": 1789719944305,
+      "lastActive": 1789720515838,
+      "completedAt": null,
+      "bestTime": null,
+      "totalPlays": 1
+    }
+  },
+  "winners": [
+    {
+      "id": "HE182510-1789718611990",
+      "studentId": "HE182510",
+      "fullName": "quanghuy",
+      "classGroup": "1",
+      "totalTime": 235,
+      "timeFormatted": "03:55",
+      "score": 3051,
+      "completedAt": "2026-09-18T08:03:31.990Z",
+      "completedTimestamp": 1789718611990
+    }
+  ]
+}

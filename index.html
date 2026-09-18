@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Marx: Dấu Chân Triết Gia - MLN111</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <main class="app-shell">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">MLN111 Creative Product &bull; FPT Student View</p>
+        <h1>PIXEL MARX:<br /><span>DẤU CHÂN TRIẾT GIA</span></h1>
+        <p class="tagline">
+          Game 2D pixel biến các quy luật Triết học Mác - Lênin thành boss fight, puzzle và hành trình nhận thức. Tích hợp theo dõi tiến độ sinh viên và bảng xếp hạng thi đua thời gian thực.
+        </p>
+        <div class="quick-actions">
+          <button id="startButton" class="primary-button">Bắt đầu deadline</button>
+          <button id="restartButton" class="ghost-button">Chơi lại</button>
+          <button id="openLeaderboardBtn" class="ghost-button" style="border-color: var(--yellow); color: var(--yellow);">🏆 Bảng Xếp Hạng</button>
+          <button id="btnChangeStudent" class="ghost-button" title="Đổi thông tin sinh viên">👤 Đổi SV</button>
+        </div>
+        <div class="graphics-options" aria-label="Tùy chỉnh chất lượng đồ họa">
+          <span>Chất lượng đồ họa</span>
+          <div class="graphics-toggle" role="group" aria-label="Chọn mức đồ họa">
+            <button type="button" class="quality-button" data-graphics-quality="high" aria-pressed="true">Cao</button>
+            <button type="button" class="quality-button" data-graphics-quality="low" aria-pressed="false">Thấp</button>
+          </div>
+          <p id="graphicsHint">Cao: giữ nguyên hiệu ứng pixel, phù hợp máy chạy mượt.</p>
+        </div>
+      </div>
+      <div class="hero-mission" aria-label="Tóm tắt nhiệm vụ demo">
+        <span class="mission-label">Demo route</span>
+        <strong>3 chương &rarr; 3 boss &rarr; 1 hành trình nhận thức</strong>
+        <p>Chơi, nhận diện quy luật, mở cổng và chốt lại kiến thức sau mỗi màn.</p>
+      </div>
+      <div id="chapterSelect" class="chapter-select" aria-label="Chọn màn chơi đã mở khóa">
+        <button type="button" class="chapter-button" data-chapter="0" disabled><span>Màn 1</span><strong>Lượng - Chất</strong></button>
+        <button type="button" class="chapter-button" data-chapter="1" disabled><span>Màn 2</span><strong>Mâu thuẫn</strong></button>
+        <button type="button" class="chapter-button" data-chapter="2" disabled><span>Màn 3</span><strong>Phủ định</strong></button>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-label="Khu vực chơi game Pixel Marx">
+      <div class="canvas-frame">
+        <canvas id="gameCanvas" width="960" height="540">
+          Trình duyệt của bạn không hỗ trợ Canvas. Hãy dùng Chrome/Edge/Firefox bản mới.
+        </canvas>
+      </div>
+      <aside class="hud-panel">
+        <!-- Student Info Card -->
+        <div class="hud-card student-hud-card">
+          <span>Sinh viên đang cày</span>
+          <div class="student-meta">
+            <strong id="hudStudentName" class="student-name">Chưa đăng ký</strong>
+            <div class="student-sub">
+              <span id="hudStudentId" class="student-id">---</span>
+            </div>
+            <div class="student-sub" style="margin-top: 2px;">
+              <span class="timer-badge" title="Thời gian chơi">⏱️ <strong id="hudLiveTimer">00:00</strong></span>
+              <span class="timer-badge" style="border-color: rgba(94, 234, 212, 0.4);" title="Thời gian deadline 10 phút còn lại">⏳ <strong id="hudRemainTimer">10:00</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-card objective-card">
+          <span>Đang cần làm</span>
+          <strong id="objectiveText">Nhấn &ldquo;Bắt đầu deadline&rdquo; để vào Aletheia.</strong>
+        </div>
+        <div class="hud-card accent">
+          <span>Chương</span>
+          <strong id="chapterTitle">Menu chính</strong>
+        </div>
+        <div class="hud-card">
+          <span>Khái niệm</span>
+          <p id="conceptText">Sản phẩm sáng tạo MLN111</p>
+        </div>
+        <div class="hud-card meters">
+          <div class="meter-row"><span>HP</span><div class="meter"><div id="hpFill" class="meter-fill hp"></div></div></div>
+          <div class="meter-row"><span>Kỹ năng</span><div class="meter"><div id="skillFill" class="meter-fill skill"></div></div></div>
+          <div class="score-line">Điểm: <strong id="scoreText">0</strong></div>
+        </div>
+        <div class="hud-card controls">
+          <span>Điều khiển</span>
+          <ul>
+            <li><kbd>A</kbd>/<kbd>D</kbd> hoặc <kbd>&larr;</kbd>/<kbd>&rarr;</kbd>: di chuyển</li>
+            <li><kbd>W</kbd>/<kbd>Space</kbd>: nhảy</li>
+            <li><kbd>J</kbd>: cày/đánh gần</li>
+            <li><kbd>Click chuột</kbd>: bắn xa ở màn 3</li>
+            <li><kbd>K</kbd>: kỹ năng triết học từng chương</li>
+            <li><kbd>E</kbd>/<kbd>Enter</kbd>: tương tác/tiếp tục</li>
+          </ul>
+        </div>
+        <div class="hud-card philosophy">
+          <span>Gợi ý triết học</span>
+          <p id="philosophyText">&ldquo;Triết học không chỉ giải thích thế giới &mdash; hãy phá đảo để cải tạo nó.&rdquo;</p>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Dialog box -->
+    <section id="dialogBox" class="dialog-box" aria-live="polite">
+      <strong id="dialogSpeaker">Mác-bro</strong>
+      <p id="dialogText">Chào nhóc sinh viên FPT! Sẵn sàng cày deadline chưa?</p>
+    </section>
+
+    <!-- Modal 1: Knowledge Modal -->
+    <section id="knowledgeModal" class="knowledge-modal" role="dialog" aria-modal="true" aria-labelledby="knowledgeTitle" aria-hidden="true">
+      <div class="knowledge-card">
+        <div class="knowledge-header">
+          <p class="knowledge-kicker">Tổng kết học thuật sau màn</p>
+          <h2 id="knowledgeTitle">Khái niệm MLN111</h2>
+          <p id="knowledgeConcept" class="knowledge-concept"></p>
+        </div>
+        <div class="knowledge-grid">
+          <article class="knowledge-section"><span>01 / Khái niệm</span><div id="knowledgeBody" class="knowledge-body"></div></article>
+          <article class="knowledge-section accent-section"><span>02 / Ghi nhớ nhanh</span><ul id="knowledgeList" class="knowledge-list"></ul></article>
+          <article class="knowledge-section mapping-section"><span>03 / Gameplay hóa</span><p id="knowledgeMapping" class="knowledge-mapping"></p></article>
+        </div>
+        <p id="knowledgeSource" class="knowledge-source"></p>
+        <button id="knowledgeClose" class="primary-button">Đã hiểu, tiếp tục</button>
+      </div>
+    </section>
+
+    <!-- Modal 2: Student Registration Modal -->
+    <section id="studentModal" class="knowledge-modal" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle" aria-hidden="true">
+      <div class="knowledge-card auth-card">
+        <div class="knowledge-header">
+          <p class="knowledge-kicker">Đăng ký tham gia cày deadline MLN111</p>
+          <h2 id="studentModalTitle">NHẬP THÔNG TIN SINH VIÊN</h2>
+          <p class="knowledge-concept">Dữ liệu tiến độ, thời gian vượt màn và thứ hạng sẽ được đồng bộ trực tiếp lên Bảng Vinh Danh.</p>
+        </div>
+        <form id="studentForm" class="student-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="inputStudentId">MÃ SINH VIÊN (MSSV) <span style="color:var(--red);">*</span></label>
+            <input type="text" id="inputStudentId" class="modal-input" placeholder="Ví dụ: SE181234, HE170001..." required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="inputStudentName">HỌ VÀ TÊN <span style="color:var(--red);">*</span></label>
+            <input type="text" id="inputStudentName" class="modal-input" placeholder="Ví dụ: Nguyễn Văn A" required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="inputStudentClass">LỚP / NHÓM HỌC TẬP (Tùy chọn)</label>
+            <input type="text" id="inputStudentClass" class="modal-input" placeholder="Ví dụ: IA1801, Nhóm 3..." autocomplete="off" />
+          </div>
+          <div class="modal-actions">
+            <button type="submit" id="btnSubmitStudent" class="primary-button">Xác nhận & Bắt đầu chơi</button>
+            <button type="button" id="btnCloseStudentModal" class="ghost-button">Bỏ qua</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Modal 3: In-game Leaderboard Modal -->
+    <section id="leaderboardModal" class="knowledge-modal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle" aria-hidden="true">
+      <div class="knowledge-card lead-card">
+        <div class="knowledge-header">
+          <p class="knowledge-kicker">Bảng Vinh Danh Triết Gia MLN111</p>
+          <h2 id="leadModalTitle">TOP SINH VIÊN PHÁ ĐẢO</h2>
+          <p class="knowledge-concept">Xếp hạng theo thời gian hoàn thành nhanh nhất 3 quy luật biện chứng duy vật.</p>
+        </div>
+        <div class="in-game-lead-body">
+          <div class="table-frame" style="max-height: 280px; overflow-y: auto;">
+            <table class="data-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Hạng</th>
+                  <th>MSSV</th>
+                  <th>Họ Tên</th>
+                  <th>Thời Gian</th>
+                  <th>Điểm</th>
+                </tr>
+              </thead>
+              <tbody id="inGameLeaderboardRows">
+                <!-- In game rows -->
+              </tbody>
+            </table>
+          </div>
+          <div id="inGameEmptyLead" style="display:none; text-align:center; padding: 20px; color:var(--muted);">
+            Chưa có sinh viên nào phá đảo. Hãy là người đầu tiên!
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 18px;">
+          <a href="dashboard.html" target="_blank" class="primary-button" style="text-decoration:none; display:inline-block; text-align:center;">📊 Mở Live Dashboard</a>
+          <button type="button" id="btnCloseLeaderboardModal" class="ghost-button">Đóng</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal 4: Timeout Modal (Hết Giờ Deadline 10 Phút) -->
+    <section id="timeoutModal" class="knowledge-modal" role="dialog" aria-modal="true" aria-labelledby="timeoutModalTitle" aria-hidden="true">
+      <div class="knowledge-card auth-card" style="border-color: var(--red);">
+        <div class="knowledge-header" style="border-color: rgba(251, 113, 133, 0.4);">
+          <p class="knowledge-kicker" style="color: var(--red);">Hết Giờ Deadline</p>
+          <h2 id="timeoutModalTitle" style="color: var(--red);">TRỄ HẠN DEADLINE (10 PHÚT)</h2>
+          <p class="knowledge-concept">Đã hết 10 phút thi đấu! Bạn chưa kịp hoàn thành nhận thức 3 quy luật Triết học để phá đảo.</p>
+        </div>
+        <div style="padding: 10px 0; color: var(--ink); line-height: 1.6; font-size: 0.95rem;">
+          <p>⏳ Trong phép biện chứng duy vật, sự phát triển đòi hỏi tích lũy lượng kịp thời để tạo bước nhảy đúng thời điểm. Hãy cày lại deadline để tối ưu thời gian nhé!</p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btnRestartAfterTimeout" class="primary-button" style="background: var(--red); border-color: #fda4af;">Chơi Lại Vòng Mới</button>
+          <button type="button" id="btnCloseTimeoutModal" class="ghost-button">Về Menu Chính</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter Transition -->
+    <section id="chapterTransition" class="chapter-transition" aria-live="polite" aria-hidden="true">
+      <div>
+        <p id="transitionKicker">Chương mới</p>
+        <h2 id="transitionTitle">PIXEL MARX</h2>
+        <p id="transitionConcept">Chuẩn bị vào màn</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="src/tracker.js"></script>
+  <script src="src/game.js?v=2026060605"></script>
+</body>
+</html>
