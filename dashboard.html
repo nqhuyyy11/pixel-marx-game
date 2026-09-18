@@ -580,7 +580,13 @@
         winToastDesc: document.getElementById('winToastDesc'),
       };
 
+      // In-memory authentication state (Always requires login when opening the page)
+      let isAuthenticated = false;
       let isServiceRunning = false;
+
+      // Clear any old stored session from past tests
+      sessionStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem(AUTH_KEY);
 
       // Trigger error shake animation
       function triggerError(msg) {
@@ -591,22 +597,13 @@
           void dom.adminModalCard.offsetWidth; // Reflow to replay animation
           dom.adminModalCard.classList.add('shake');
         }
+        dom.adminPassword.value = '';
         dom.adminPassword.focus();
       }
 
-      // Check Authentication
+      // Check Authentication & Toggle View
       function checkAuth() {
-        // Support URL param force logout ?logout=1
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('logout')) {
-          sessionStorage.removeItem(AUTH_KEY);
-          localStorage.removeItem(AUTH_KEY);
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        const isAuth = sessionStorage.getItem(AUTH_KEY) === 'true';
-
-        if (isAuth) {
+        if (isAuthenticated) {
           dom.adminLoginModalOverlay.classList.add('hidden');
           dom.mainDashboardView.style.display = 'block';
           if (!isServiceRunning) {
@@ -646,7 +643,7 @@
           });
           const data = await res.json();
           if (res.ok && data.success) {
-            sessionStorage.setItem(AUTH_KEY, 'true');
+            isAuthenticated = true;
             dom.loginErrorMsg.style.display = 'none';
             dom.adminPassword.value = '';
             checkAuth();
@@ -657,7 +654,7 @@
           // Offline fallback
           const u = username.toLowerCase();
           if ((u === 'admin' || u === 'nqhuy' || u === 'huy') && password === 'huyvipmn5') {
-            sessionStorage.setItem(AUTH_KEY, 'true');
+            isAuthenticated = true;
             dom.loginErrorMsg.style.display = 'none';
             dom.adminPassword.value = '';
             checkAuth();
@@ -669,8 +666,7 @@
 
       // Handle Logout
       dom.btnLogout.addEventListener('click', () => {
-        sessionStorage.removeItem(AUTH_KEY);
-        localStorage.removeItem(AUTH_KEY);
+        isAuthenticated = false;
         dom.adminPassword.value = '';
         checkAuth();
       });
