@@ -881,7 +881,7 @@
   }
 
   let knowledgeCountdownTimer = null;
-  let knowledgeRemainingSeconds = 30;
+  let knowledgeRemainingSeconds = 15;
 
   function showKnowledgePopup(chapter) {
     const knowledge = chapter.knowledge;
@@ -906,16 +906,16 @@
     ui.knowledgeModal.classList.add('is-visible');
     ui.knowledgeModal.setAttribute('aria-hidden', 'false');
 
-    // 30-second countdown for philosophical reading & understanding
+    // 15-second countdown for philosophical reading & understanding
     if (knowledgeCountdownTimer) {
       clearInterval(knowledgeCountdownTimer);
       knowledgeCountdownTimer = null;
     }
 
-    knowledgeRemainingSeconds = 30;
+    knowledgeRemainingSeconds = 15;
     ui.knowledgeClose.disabled = true;
     ui.knowledgeClose.textContent = `⏳ Đọc & ghi nhớ triết học (${knowledgeRemainingSeconds}s...)`;
-    ui.knowledgeClose.title = 'Vui lòng đọc kỹ tổng kết học thuật trong 30 giây để tiếp tục qua màn';
+    ui.knowledgeClose.title = 'Vui lòng đọc kỹ tổng kết học thuật trong 15 giây để tiếp tục qua màn';
 
     knowledgeCountdownTimer = setInterval(() => {
       knowledgeRemainingSeconds -= 1;
@@ -935,7 +935,7 @@
 
   function hideKnowledgePopup() {
     if (ui.knowledgeClose && ui.knowledgeClose.disabled) {
-      return; // Still in 30s countdown
+      return; // Still in 15s countdown
     }
     if (knowledgeCountdownTimer) {
       clearInterval(knowledgeCountdownTimer);

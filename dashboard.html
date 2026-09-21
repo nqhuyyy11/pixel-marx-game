@@ -527,6 +527,42 @@
     </div>
   </div>
 
+  <!-- VIEW 3: ADMIN RESET CONFIRMATION PIN MODAL OVERLAY -->
+  <div id="adminResetModalOverlay" class="admin-login-overlay hidden">
+    <div class="admin-modal-card" id="adminResetModalCard" style="border-color: var(--red);">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 2.4rem; margin-bottom: 8px;">⚠️</div>
+        <p class="eyebrow" style="color: var(--red); font-size: 0.88rem; letter-spacing: 0.12em;">BẢO MẬT QUẢN TRỊ VIÊN</p>
+        <h2 style="margin: 8px 0; font-size: 1.6rem; color: var(--ink); text-shadow: 0 0 12px rgba(239, 68, 68, 0.3);">
+          XÁC NHẬN RESET DỮ LIỆU</h2>
+        <p style="font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.5;">
+          Toàn bộ tiến độ thi đấu &amp; bảng xếp hạng sẽ bị làm mới. Vui lòng nhập Mã PIN Admin để xác nhận.
+        </p>
+      </div>
+
+      <form id="adminResetForm" onsubmit="return false;" style="display:flex; flex-direction:column; gap:16px;">
+        <div class="form-group">
+          <label for="adminResetPin"
+            style="color:var(--yellow); font-size:0.85rem; font-weight:bold; display:block; margin-bottom:6px;">🔑 MÃ PIN ADMIN (MẬT KHẨU)</label>
+          <input type="password" id="adminResetPin" class="modal-input" placeholder="Nhập mã PIN Admin..."
+            required autocomplete="current-password" />
+        </div>
+
+        <div id="resetErrorMsg"
+          style="display:none; color:#f87171; background:rgba(239, 68, 68, 0.15); border:1px solid #ef4444; border-radius:4px; font-size:0.88rem; padding:10px 12px; font-weight:bold; text-align:center;">
+          ❌ Mã PIN Admin không chính xác!
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button type="button" id="btnCancelReset" class="ghost-button"
+            style="flex:1; padding:12px; font-size:0.95rem; cursor:pointer; text-align:center;">Hủy bỏ</button>
+          <button type="submit" id="btnConfirmReset" class="primary-button"
+            style="flex:1; padding:12px; font-size:0.95rem; background:var(--red); border-color:#ef4444; color:#fff; cursor:pointer;">⚠️ Reset Dữ Liệu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- VIEW 2: MAIN DASHBOARD -->
   <div id="mainDashboardView" class="dashboard-container" style="display: none;">
     <!-- Header -->
@@ -662,6 +698,12 @@
         searchPlayer: document.getElementById('searchPlayer'),
         btnExportCsv: document.getElementById('btnExportCsv'),
         btnReset: document.getElementById('btnReset'),
+        adminResetModalOverlay: document.getElementById('adminResetModalOverlay'),
+        adminResetModalCard: document.getElementById('adminResetModalCard'),
+        adminResetForm: document.getElementById('adminResetForm'),
+        adminResetPin: document.getElementById('adminResetPin'),
+        resetErrorMsg: document.getElementById('resetErrorMsg'),
+        btnCancelReset: document.getElementById('btnCancelReset'),
         winToast: document.getElementById('winToast'),
         winToastTitle: document.getElementById('winToastTitle'),
         winToastDesc: document.getElementById('winToastDesc'),
@@ -675,7 +717,7 @@
       sessionStorage.removeItem(AUTH_KEY);
       localStorage.removeItem(AUTH_KEY);
 
-      // Trigger error shake animation
+      // Trigger error shake animation for login
       function triggerError(msg) {
         dom.loginErrorMsg.style.display = 'block';
         dom.loginErrorMsg.textContent = '❌ ' + msg;
@@ -686,6 +728,19 @@
         }
         dom.adminPassword.value = '';
         dom.adminPassword.focus();
+      }
+
+      // Trigger error shake animation for reset modal
+      function triggerResetError(msg) {
+        dom.resetErrorMsg.style.display = 'block';
+        dom.resetErrorMsg.textContent = '❌ ' + msg;
+        if (dom.adminResetModalCard) {
+          dom.adminResetModalCard.classList.remove('shake');
+          void dom.adminResetModalCard.offsetWidth; // Reflow to replay animation
+          dom.adminResetModalCard.classList.add('shake');
+        }
+        dom.adminResetPin.value = '';
+        dom.adminResetPin.focus();
       }
 
       // Check Authentication & Toggle View
@@ -779,12 +834,28 @@
         window.location.href = '/api/export-csv';
       });
 
-      // Reset with PIN protection
-      dom.btnReset.addEventListener('click', async () => {
-        const pin = prompt('Nhập Mã PIN Admin để xác nhận thiết lập lại dữ liệu:');
-        if (pin === null) return;
-        if (!pin.trim()) {
-          alert('Chưa nhập mã PIN!');
+      // Open Reset Modal (Password input is hidden/masked)
+      dom.btnReset.addEventListener('click', () => {
+        dom.adminResetPin.value = '';
+        dom.resetErrorMsg.style.display = 'none';
+        dom.adminResetModalOverlay.classList.remove('hidden');
+        setTimeout(() => dom.adminResetPin.focus(), 100);
+      });
+
+      function closeResetModal() {
+        dom.adminResetModalOverlay.classList.add('hidden');
+        dom.adminResetPin.value = '';
+        dom.resetErrorMsg.style.display = 'none';
+      }
+
+      dom.btnCancelReset.addEventListener('click', closeResetModal);
+
+      // Handle Reset Submit with PIN validation
+      dom.adminResetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pin = dom.adminResetPin.value.trim();
+        if (!pin) {
+          triggerResetError('Vui lòng nhập Mã PIN Admin!');
           return;
         }
 
@@ -794,17 +865,18 @@
           const res = await fetch('/api/admin/reset', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mode: 'all', adminPin: pin.trim() }),
+            body: JSON.stringify({ mode: 'all', adminPin: pin }),
           });
           const data = await res.json();
           if (res.ok && data.success) {
+            closeResetModal();
             alert('✅ ' + data.message);
             fetchData();
           } else {
-            alert('❌ ' + (data.error || 'Lỗi xác thực Admin!'));
+            triggerResetError(data.error || 'Mã PIN Admin không chính xác!');
           }
         } catch (e) {
-          alert('❌ Lỗi kết nối máy chủ!');
+          triggerResetError('Lỗi kết nối máy chủ!');
         }
       });
 
